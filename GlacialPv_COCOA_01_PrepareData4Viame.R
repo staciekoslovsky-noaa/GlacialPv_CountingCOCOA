@@ -36,10 +36,10 @@ setwd(wd)
 con <-   DBI::dbConnect(RPostgreSQL::PostgreSQL(),
                         dbname = Sys.getenv("pep_db"),
                         host = Sys.getenv("pep_ip"),
-                        user = Sys.getenv("pep_admin"),
-                        password = Sys.getenv("admin_pw"))
-                        # user = Sys.getenv("pep_user"),
-                        # password = Sys.getenv("user_pw"))
+                        # user = Sys.getenv("pep_admin"),
+                        # password = Sys.getenv("admin_pw"))
+                        user = Sys.getenv("pep_user"),
+                        password = Sys.getenv("user_pw"))
 
 images_all <- sf::st_read(con, query = paste0("SELECT * FROM surv_pv_gla.geo_images_footprint_network_path WHERE survey_id = \'", survey_id, "\' ORDER BY image_name ")) %>%
   mutate(dt = str_extract(image_name, "[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]_[0-9][0-9][0-9][0-9][0-9][0-9].[0-9][0-9][0-9][0-9][0-9][0-9]"))
@@ -71,15 +71,38 @@ images_selected_R <- footprints %>%
 write.table(images_selected_R, paste0(survey_id, "_R_images_", format(Sys.time(), "%Y%m%d"), ".txt"), quote = FALSE, row.names = FALSE, col.names = FALSE)
 
 # Create and export annotation files
-annotations_C <- read
+annotations_C <- read.csv("https://raw.githubusercontent.com/staciekoslovsky-noaa/GlacialPv_CountingCOCOA/main/GlacialPv_COCOA_00_DefaultAnnotationFile_C.csv") %>%
+  cross_join(images_selected_C) %>%
+  arrange(image_path) %>%
+  mutate(viame_id = 1:n(),
+         poly = ifelse(is.na(poly), "", poly)) %>%
+  group_by(image_path) %>%
+  mutate(frame_id = cur_group_id()) %>%
+  ungroup %>%
+  select(viame_id, image_path, frame_id, left, top, right, bottom, score, length, detection_type, confidence, poly) 
+write.table(annotations_C, paste0(survey_id, "_C_annotations_", format(Sys.time(), "%Y%m%d"), ".csv"), sep = ',', quote = FALSE, row.names = FALSE, col.names = FALSE)
 
-library(RCurl)
-x <- getURL("https://raw.github.com/aronlindberg/latent_growth_classes/master/LGC_data.csv")
-y <- read.csv(text = x)
+annotations_L <- read.csv("https://raw.githubusercontent.com/staciekoslovsky-noaa/GlacialPv_CountingCOCOA/main/GlacialPv_COCOA_00_DefaultAnnotationFile_L.csv") %>%
+  cross_join(images_selected_L) %>%
+  arrange(image_path) %>%
+  mutate(viame_id = 1:n(),
+         poly = ifelse(is.na(poly), "", poly)) %>%
+  group_by(image_path) %>%
+  mutate(frame_id = cur_group_id()) %>%
+  ungroup %>%
+  select(viame_id, image_path, frame_id, left, top, right, bottom, score, length, detection_type, confidence, poly) 
+write.table(annotations_C, paste0(survey_id, "_L_annotations_", format(Sys.time(), "%Y%m%d"), ".csv"), sep = ',', quote = FALSE, row.names = FALSE, col.names = FALSE)
 
-
-
-
+annotations_R <- read.csv("https://raw.githubusercontent.com/staciekoslovsky-noaa/GlacialPv_CountingCOCOA/main/GlacialPv_COCOA_00_DefaultAnnotationFile_R.csv") %>%
+  cross_join(images_selected_R) %>%
+  arrange(image_path) %>%
+  mutate(viame_id = 1:n(),
+         poly = ifelse(is.na(poly), "", poly)) %>%
+  group_by(image_path) %>%
+  mutate(frame_id = cur_group_id()) %>%
+  ungroup %>%
+  select(viame_id, image_path, frame_id, left, top, right, bottom, score, length, detection_type, confidence, poly) 
+write.table(annotations_C, paste0(survey_id, "_R_annotations_", format(Sys.time(), "%Y%m%d"), ".csv"), sep = ',', quote = FALSE, row.names = FALSE, col.names = FALSE)
 
 RPostgreSQL::dbDisconnect(con)
 rm(con)
