@@ -1,9 +1,9 @@
 # Glacial Pv Surveys: Export image list, annotation file, and shapefile of selected footprints for counting
 
 # STARTING VARIABLES 
-survey_year <- 2021
-survey_id <- 'endicott_20210830_fullmosaic_3' # survey_id to be counted
-interval2keep <- 5 # keep every nth image for image review (this needs to be evaluated in QGIS before running this code)
+survey_year <- 2020
+survey_id <- 'endicott_20200903_fullmosaic_1' # survey_id to be counted
+interval2keep <- 1 # keep every nth image for image review (this needs to be evaluated in QGIS before running this code)
 
 # Create functions -----------------------------------------------
 # Function to install packages needed
@@ -46,8 +46,13 @@ images_all <- sf::st_read(con, query = paste0("SELECT * FROM surv_pv_gla.geo_ima
 
 # Subset images to every nth frame
 images_selected_C <- images_all %>%
-  filter(camera_view == "C") %>%
-  filter(row_number() %% interval2keep == 1)
+  filter(camera_view == "C") 
+
+if (interval2keep > 1) {
+  images_selected_C <- images_selected_C %>%
+    filter(row_number() %% interval2keep == 1)
+}
+
 
 # Export footprints for selected images
 footprints <- images_all %>%
@@ -61,11 +66,13 @@ images_selected_C <- images_selected_C %>%
 write.table(images_selected_C, paste0(survey_id, "_C_images_", format(Sys.time(), "%Y%m%d"), ".txt"), quote = FALSE, row.names = FALSE, col.names = FALSE)
 
 images_selected_L <- footprints %>%
+  filter(camera_view == "L") %>%
   select(image_path) %>%
   st_drop_geometry()
 write.table(images_selected_L, paste0(survey_id, "_L_images_", format(Sys.time(), "%Y%m%d"), ".txt"), quote = FALSE, row.names = FALSE, col.names = FALSE)
 
 images_selected_R <- footprints %>%
+  filter(camera_view == "R") %>%
   select(image_path) %>%
   st_drop_geometry()
 write.table(images_selected_R, paste0(survey_id, "_R_images_", format(Sys.time(), "%Y%m%d"), ".txt"), quote = FALSE, row.names = FALSE, col.names = FALSE)
