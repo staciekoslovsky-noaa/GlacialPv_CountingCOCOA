@@ -98,7 +98,7 @@ annotations_L <- read.csv("https://raw.githubusercontent.com/staciekoslovsky-noa
   mutate(frame_id = cur_group_id()-1) %>%
   ungroup %>%
   select(viame_id, image_path, frame_id, left, top, right, bottom, score, length, detection_type, confidence, poly) 
-write.table(annotations_C, paste0(survey_id, "_L_annotations_", format(Sys.time(), "%Y%m%d"), ".csv"), sep = ',', quote = FALSE, row.names = FALSE, col.names = FALSE)
+write.table(annotations_L, paste0(survey_id, "_L_annotations_", format(Sys.time(), "%Y%m%d"), ".csv"), sep = ',', quote = FALSE, row.names = FALSE, col.names = FALSE)
 
 annotations_R <- read.csv("https://raw.githubusercontent.com/staciekoslovsky-noaa/GlacialPv_CountingCOCOA/main/GlacialPv_COCOA_00_DefaultAnnotationFile_R.csv") %>%
   cross_join(images_selected_R) %>%
@@ -109,7 +109,7 @@ annotations_R <- read.csv("https://raw.githubusercontent.com/staciekoslovsky-noa
   mutate(frame_id = cur_group_id()-1) %>%
   ungroup %>%
   select(viame_id, image_path, frame_id, left, top, right, bottom, score, length, detection_type, confidence, poly) 
-write.table(annotations_C, paste0(survey_id, "_R_annotations_", format(Sys.time(), "%Y%m%d"), ".csv"), sep = ',', quote = FALSE, row.names = FALSE, col.names = FALSE)
+write.table(annotations_R, paste0(survey_id, "_R_annotations_", format(Sys.time(), "%Y%m%d"), ".csv"), sep = ',', quote = FALSE, row.names = FALSE, col.names = FALSE)
 
 RPostgreSQL::dbDisconnect(con)
 rm(con)
