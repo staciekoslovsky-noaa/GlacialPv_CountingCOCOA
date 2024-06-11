@@ -43,14 +43,14 @@ con <- RPostgreSQL::dbConnect(PostgreSQL(),
 RPostgreSQL::dbSendQuery(con, paste0("DELETE FROM surv_pv_gla.tbl_detections_processed_rgb WHERE detection_id LIKE \'%", survey_id, "%\'"))
 
 # Import data and process
-processed_id <- RPostgreSQL::dbGetQuery(con, "SELECT max(id) FROM surv_pv_gla.tbl_detections_processed_rgb") 
-processed_id$max <- ifelse(is.na(processed_id$max), 0, processed_id$max)
+files <- data.frame(processed = list.files(path = wd, full.names = FALSE, recursive = FALSE, pattern = "processed"), stringsAsFactors = FALSE) 
 
-files <- data.frame(processed = list.files(path = wd, full.names = FALSE, recursive = FALSE, pattern = "inProgress"), stringsAsFactors = FALSE) 
-
-for (f in nrow(files)) {
+for (f in 1:nrow(files)) {
+  processed_id <- RPostgreSQL::dbGetQuery(con, "SELECT max(id) FROM surv_pv_gla.tbl_detections_processed_rgb") 
+  processed_id$max <- ifelse(is.na(processed_id$max), 0, processed_id$max)
+  
   processed <- read.csv(files$processed[f], skip = 2, header = FALSE, stringsAsFactors = FALSE, 
-                        col.names = c("detection", "image_name", "frame_number", "bound_left", "bound_top", "bound_right", "bound_bottom", "score", "length", "detection_type", "type_score"))
+                        col.names = c("detection", "image_name", "frame_number", "bound_left", "bound_top", "bound_right", "bound_bottom", "score", "length", "detection_type", "type_score", "poly_cocoa"))
   detection_types <- unique(processed$detection_type)
   
   if (nrow(processed) > 0) {
@@ -58,20 +58,20 @@ for (f in nrow(files)) {
       stop(paste0("Not all needs_review areas have been reviewed or updated in ", files$processed[f]))
     }
     
-    if (length(detection_types[!(detection_types %in% c("harbor_seal", "harbor_pup", "reviewed", "ignore"))]) > 0) {
+    if (length(detection_types[!(detection_types %in% c("harbor_seal", "harbor_pup", "reviewed", "ignore", "suppressed"))]) > 0) {
       stop(paste0("Unexpected detection_type values in ", files$processed[f]))
     }
     
     processed <- processed %>%
-      filter(detection_type == "harbor_seal" || detection_type == "harbor_pup") %>%
+      filter(detection_type != "reviewed") %>%
       mutate(image_name = basename(sapply(strsplit(image_name, split= "\\/"), function(x) x[length(x)]))) %>%
       mutate(id = 1:n() + processed_id$max) %>%
       mutate(detection_file = files$processed[f]) %>%
       mutate(flight = str_extract(image_name, "fl[0-9][0-9]")) %>%
       mutate(camera_view = gsub("_", "", str_extract(image_name, "_[A-Z]_"))) %>%
-      mutate(detection_id = paste(survey_id, year, str_extract(image_name, "fl[0-9][0-9]"), gsub("_", "", str_extract(image_name, "_[A-Z]_")), detection, sep = "_")) %>%
+      mutate(detection_id = paste(survey_id, survey_year, str_extract(image_name, "fl[0-9][0-9]"), gsub("_", "", str_extract(image_name, "_[A-Z]_")), detection, sep = "_")) %>%
       select("id", "detection", "image_name", "frame_number", "bound_left", "bound_top", "bound_right", "bound_bottom", "score", "length", "detection_type", "type_score", 
-             "flight", "camera_view", "detection_id", "detection_file")
+             "flight", "camera_view", "detection_id", "detection_file", "poly_cocoa")
   
     # Import data to DB
     RPostgreSQL::dbWriteTable(con, c("surv_pv_gla", "tbl_detections_processed_rgb"), processed, append = TRUE, row.names = FALSE)
