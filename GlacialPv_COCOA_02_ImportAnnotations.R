@@ -3,7 +3,7 @@
 
 # Set variables --------------------------------------------------
 survey_year <- 2020
-survey_id <- 'endicott_20200903_fullmosaic_1' # survey_id for data that were counted
+survey_id <- 'tracy_20200905_fullmosaic_1' # survey_id for data that were counted
 
 # Create functions -----------------------------------------------
 # Function to install packages needed
@@ -32,12 +32,8 @@ setwd(wd)
 con <- RPostgreSQL::dbConnect(PostgreSQL(), 
                               dbname = Sys.getenv("pep_db"), 
                               host = Sys.getenv("pep_ip"), 
-                              # User credentials -- use this one!
                               user = Sys.getenv("pep_user"),
                               password = Sys.getenv("user_pw"))
-                              # Admin credentials -- SMK only
-                              # user = Sys.getenv("pep_admin"),
-                              # password = Sys.getenv("admin_pw"))
 
 # Delete data from tables, if previously imported
 RPostgreSQL::dbSendQuery(con, paste0("DELETE FROM surv_pv_gla.tbl_detections_processed_rgb WHERE detection_id LIKE \'%", survey_id, "%\'"))
@@ -77,6 +73,8 @@ for (f in 1:nrow(files)) {
     RPostgreSQL::dbWriteTable(con, c("surv_pv_gla", "tbl_detections_processed_rgb"), processed, append = TRUE, row.names = FALSE)
   }
 }
+
+imported_files <- RPostgreSQL::dbSendQuery(con, "SELECT DISTINCT detection_file FROM surv_pv_gla.tbl_detections_processed_rgb ORDER BY detection_file")
 
 # Disconnect from DB
 RPostgreSQL::dbDisconnect(con)
