@@ -23,7 +23,7 @@ install_pkg("sf")
 
 # Run code -------------------------------------------------------
 # Set initial working directory 
-wd <- paste("//nmfs/akc-nmml/Polar_Imagery/SurveyS_HS/Glacial/Projects/Surveys Glacial Sites Counts", survey_year, "_ReadyForCOCOA", survey_id, sep = "/")
+wd <- paste("Y://NMML_Polar_Imagery/SurveyS_HS/Glacial/Projects/Surveys Glacial Sites Counts", survey_year, "_ReadyForCOCOA", survey_id, sep = "/")
 
 if (file.exists(wd) == TRUE) {
   unlink(wd, recursive = TRUE)
