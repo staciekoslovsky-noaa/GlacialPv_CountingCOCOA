@@ -25,7 +25,7 @@ install_pkg("tidyverse")
 # Set up working environment
 "%notin%" <- Negate("%in%")
 
-counted_folder <- paste0("//akc0ss-n086/NMML_Polar_Imagery/Surveys_HS/Glacial/Projects/Surveys Glacial Sites Counts/", survey_year, "/", survey_id)
+counted_folder <- paste0("Y://NMML_Polar_Imagery/Surveys_HS/Glacial/Projects/Surveys Glacial Sites Counts/", survey_year, "/", survey_id)
 wd <- counted_folder
 setwd(wd)
 
