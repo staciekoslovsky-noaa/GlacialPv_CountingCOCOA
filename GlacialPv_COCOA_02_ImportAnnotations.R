@@ -3,7 +3,7 @@
 
 # Set variables --------------------------------------------------
 survey_year <- 2020
-survey_id <- 'tracy_20200905_fullmosaic_1' # survey_id for data that were counted
+survey_id <- 'endicott_20200903_fullmosaic_1' # survey_id for data that were counted
 
 # Create functions -----------------------------------------------
 # Function to install packages needed
@@ -74,7 +74,7 @@ for (f in 1:nrow(files)) {
   }
 }
 
-imported_files <- RPostgreSQL::dbSendQuery(con, "SELECT DISTINCT detection_file FROM surv_pv_gla.tbl_detections_processed_rgb ORDER BY detection_file")
+imported_files <- RPostgreSQL::dbGetQuery(con, "SELECT DISTINCT detection_file FROM surv_pv_gla.tbl_detections_processed_rgb ORDER BY detection_file")
 
 # Disconnect from DB
 RPostgreSQL::dbDisconnect(con)
