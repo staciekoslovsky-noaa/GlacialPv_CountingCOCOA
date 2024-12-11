@@ -3,7 +3,7 @@
 
 # Set variables --------------------------------------------------
 survey_year <- 2020
-survey_id <- 'endicott_20200903_fullmosaic_1' # survey_id for data that were counted
+survey_id <- 'blackstone_20200909_fullmosaic_1' # survey_id for data that were counted
 
 # Create functions -----------------------------------------------
 # Function to install packages needed
@@ -54,7 +54,7 @@ for (f in 1:nrow(files)) {
       stop(paste0("Not all needs_review areas have been reviewed or updated in ", files$processed[f]))
     }
     
-    if (length(detection_types[!(detection_types %in% c("harbor_seal", "harbor_pup", "reviewed", "ignore", "suppressed"))]) > 0) {
+    if (length(detection_types[!(detection_types %in% c("harbor_seal", "harbor_pup", "reviewed", "ignore", "suppressed", "no_seals"))]) > 0) {
       stop(paste0("Unexpected detection_type values in ", files$processed[f]))
     }
     
