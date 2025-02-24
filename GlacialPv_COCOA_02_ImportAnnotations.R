@@ -3,7 +3,7 @@
 
 # Set variables --------------------------------------------------
 survey_year <- 2020
-survey_id <- 'blackstone_20200909_fullmosaic_1' # survey_id for data that were counted
+survey_id <- 'tiger_20200911_fullmosaic_1' # survey_id for data that were counted
 
 # Create functions -----------------------------------------------
 # Function to install packages needed
@@ -58,19 +58,23 @@ for (f in 1:nrow(files)) {
       stop(paste0("Unexpected detection_type values in ", files$processed[f]))
     }
     
-    processed <- processed %>%
-      filter(detection_type != "reviewed") %>%
-      mutate(image_name = basename(sapply(strsplit(image_name, split= "\\/"), function(x) x[length(x)]))) %>%
-      mutate(id = 1:n() + processed_id$max) %>%
-      mutate(detection_file = files$processed[f]) %>%
-      mutate(flight = str_extract(image_name, "fl[0-9][0-9]")) %>%
-      mutate(camera_view = gsub("_", "", str_extract(image_name, "_[A-Z]_"))) %>%
-      mutate(detection_id = paste(survey_id, survey_year, str_extract(image_name, "fl[0-9][0-9]"), gsub("_", "", str_extract(image_name, "_[A-Z]_")), detection, sep = "_")) %>%
-      select("id", "detection", "image_name", "frame_number", "bound_left", "bound_top", "bound_right", "bound_bottom", "score", "length", "detection_type", "type_score", 
-             "flight", "camera_view", "detection_id", "detection_file", "poly_cocoa")
-  
-    # Import data to DB
-    RPostgreSQL::dbWriteTable(con, c("surv_pv_gla", "tbl_detections_processed_rgb"), processed, append = TRUE, row.names = FALSE)
+    processed_seals <- processed %>%
+      filter(detection_type != "reviewed") 
+    
+    if (nrow(processed_seals) > 0) {
+      processed_seals <- processed_seals %>%
+        mutate(image_name = basename(sapply(strsplit(image_name, split= "\\/"), function(x) x[length(x)]))) %>%
+        mutate(id = 1:n() + processed_id$max) %>%
+        mutate(detection_file = files$processed[f]) %>%
+        mutate(flight = str_extract(image_name, "fl[0-9][0-9]")) %>%
+        mutate(camera_view = gsub("_", "", str_extract(image_name, "_[A-Z]_"))) %>%
+        mutate(detection_id = paste(survey_id, survey_year, str_extract(image_name, "fl[0-9][0-9]"), gsub("_", "", str_extract(image_name, "_[A-Z]_")), detection, sep = "_")) %>%
+        select("id", "detection", "image_name", "frame_number", "bound_left", "bound_top", "bound_right", "bound_bottom", "score", "length", "detection_type", "type_score", 
+               "flight", "camera_view", "detection_id", "detection_file", "poly_cocoa")
+    
+      # Import data to DB
+      RPostgreSQL::dbWriteTable(con, c("surv_pv_gla", "tbl_detections_processed_rgb"), processed_seals, append = TRUE, row.names = FALSE)
+    }
   }
 }
 
