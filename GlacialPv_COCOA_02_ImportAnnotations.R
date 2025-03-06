@@ -3,7 +3,7 @@
 
 # Set variables --------------------------------------------------
 survey_year <- 2020
-survey_id <- 'tiger_20200911_fullmosaic_1' # survey_id for data that were counted
+survey_id <- 'tracy_20200905_fullmosaic_1' # survey_id for data that were counted
 
 # Create functions -----------------------------------------------
 # Function to install packages needed
