@@ -58,6 +58,16 @@ for (f in 1:nrow(files)) {
       stop(paste0("Unexpected detection_type values in ", files$processed[f]))
     }
     
+    processed_too_big <- processed %>%
+      filter(detection_type == "harbor_seal" | detection_type == "harbor_pup") %>%
+      mutate(width = bound_right - bound_left,
+             height = bound_bottom - bound_top) %>%
+      filter(height > 150 | width > 150)
+    
+    if (length(processed_too_big) > 0) {
+      stop(paste0("Bounding boxes too large for harbor seals in ", files$processed[f]))
+    }
+    
     processed_seals <- processed %>%
       filter(detection_type != "reviewed") 
     
