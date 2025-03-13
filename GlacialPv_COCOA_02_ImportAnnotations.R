@@ -64,7 +64,7 @@ for (f in 1:nrow(files)) {
              height = bound_bottom - bound_top) %>%
       filter(height > 150 | width > 150)
     
-    if (length(processed_too_big) > 0) {
+    if (nrow(processed_too_big) > 0) {
       stop(paste0("Bounding boxes too large for harbor seals in ", files$processed[f]))
     }
     
