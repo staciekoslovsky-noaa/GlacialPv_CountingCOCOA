@@ -68,6 +68,16 @@ for (f in 1:nrow(files)) {
       stop(paste0("Bounding boxes too large for harbor seals in ", files$processed[f]))
     }
     
+    processed_too_small <- processed %>%
+      filter(detection_type == "suppressed" | detection_type == "reviewed") %>%
+      mutate(width = bound_right - bound_left,
+             height = bound_bottom - bound_top) %>%
+      filter(height <= 150 | width <= 150)
+    
+    if (nrow(processed_too_big) > 0) {
+      stop(paste0("Bounding boxes too small for reviewed/suppressed zones in ", files$processed[f]))
+    }
+    
     processed_seals <- processed %>%
       filter(detection_type != "reviewed") 
     
