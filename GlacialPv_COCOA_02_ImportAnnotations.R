@@ -54,12 +54,12 @@ for (f in 1:nrow(files)) {
       stop(paste0("Not all needs_review areas have been reviewed or updated in ", files$processed[f]))
     }
     
-    if (length(detection_types[!(detection_types %in% c("harbor_seal", "harbor_pup", "reviewed", "ignore", "suppressed", "no_seals"))]) > 0) {
+    if (length(detection_types[!(detection_types %in% c("harbor_seal", "harbor_pup", "reviewed", "ignore", "suppressed", "no_seals", "seal_in_water"))]) > 0) {
       stop(paste0("Unexpected detection_type values in ", files$processed[f]))
     }
     
     processed_too_big <- processed %>%
-      filter(detection_type == "harbor_seal" | detection_type == "harbor_pup") %>%
+      filter(detection_type == "harbor_seal" | detection_type == "harbor_pup" | detection_type == "seal_in_water") %>%
       mutate(width = bound_right - bound_left,
              height = bound_bottom - bound_top) %>%
       filter(height > 150 | width > 150)
