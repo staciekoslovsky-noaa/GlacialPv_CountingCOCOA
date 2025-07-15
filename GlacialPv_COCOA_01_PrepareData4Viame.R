@@ -76,7 +76,13 @@ images_selected_R <- footprints %>%
 write.table(images_selected_R, paste0(survey_id, "_R_images_", format(Sys.time(), "%Y%m%d"), ".txt"), quote = FALSE, row.names = FALSE, col.names = FALSE)
 
 # Create and export annotation files
-annotations_C <- read.csv("https://raw.githubusercontent.com/staciekoslovsky-noaa/GlacialPv_CountingCOCOA/main/GlacialPv_COCOA_00_DefaultAnnotationFile_C.csv") %>%
+annotations_C <- 
+  if (survey_year == 2020)
+    {read.csv("https://raw.githubusercontent.com/staciekoslovsky-noaa/GlacialPv_CountingCOCOA/main/GlacialPv_COCOA_00_DefaultAnnotationFile_2020_C.csv")} else
+  if (survey_year == 2021) 
+    {read.csv("https://raw.githubusercontent.com/staciekoslovsky-noaa/GlacialPv_CountingCOCOA/main/GlacialPv_COCOA_00_DefaultAnnotationFile_2021_C.csv")} else
+  if (survey_year == 2024) 
+    {read.csv("https://raw.githubusercontent.com/staciekoslovsky-noaa/GlacialPv_CountingCOCOA/main/GlacialPv_COCOA_00_DefaultAnnotationFile_2024_C.csv")} 
   cross_join(images_selected_C) %>%
   arrange(image_path) %>%
   mutate(viame_id = (1:n())-1,
@@ -91,7 +97,9 @@ annotations_L <-
   if (survey_year == 2020) 
     {read.csv("https://raw.githubusercontent.com/staciekoslovsky-noaa/GlacialPv_CountingCOCOA/main/GlacialPv_COCOA_00_DefaultAnnotationFile_2020_L.csv")} else
   if (survey_year == 2021) 
-    {read.csv("https://raw.githubusercontent.com/staciekoslovsky-noaa/GlacialPv_CountingCOCOA/main/GlacialPv_COCOA_00_DefaultAnnotationFile_2021_L.csv")}
+    {read.csv("https://raw.githubusercontent.com/staciekoslovsky-noaa/GlacialPv_CountingCOCOA/main/GlacialPv_COCOA_00_DefaultAnnotationFile_2021_L.csv")} else
+  if (survey_year == 2024) 
+    {read.csv("https://raw.githubusercontent.com/staciekoslovsky-noaa/GlacialPv_CountingCOCOA/main/GlacialPv_COCOA_00_DefaultAnnotationFile_2024_L.csv")}
 annotations_L <- annotations_L %>%
   cross_join(images_selected_L) %>%
   arrange(image_path) %>%
@@ -107,7 +115,9 @@ annotations_R <-
   if (survey_year == 2020) 
     {read.csv("https://raw.githubusercontent.com/staciekoslovsky-noaa/GlacialPv_CountingCOCOA/main/GlacialPv_COCOA_00_DefaultAnnotationFile_2020_R.csv")} else
   if (survey_year == 2021) 
-    {read.csv("https://raw.githubusercontent.com/staciekoslovsky-noaa/GlacialPv_CountingCOCOA/main/GlacialPv_COCOA_00_DefaultAnnotationFile_2021_R.csv")}
+    {read.csv("https://raw.githubusercontent.com/staciekoslovsky-noaa/GlacialPv_CountingCOCOA/main/GlacialPv_COCOA_00_DefaultAnnotationFile_2021_R.csv")} else
+  if (survey_year == 2024) 
+    {read.csv("https://raw.githubusercontent.com/staciekoslovsky-noaa/GlacialPv_CountingCOCOA/main/GlacialPv_COCOA_00_DefaultAnnotationFile_2024_R.csv")}
 annotations_R <- annotations_R %>%
   cross_join(images_selected_R) %>%
   arrange(image_path) %>%
