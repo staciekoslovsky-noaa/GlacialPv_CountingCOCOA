@@ -2,7 +2,7 @@
 
 # STARTING VARIABLES 
 survey_year <- 2024
-survey_id <- 'margerie_20240817_targetedcount_1' # survey_id to be counted
+survey_id <- 'margerie_20240821_fullcount_1' # survey_id to be counted
 interval2keep <- 1 # keep every nth image for image review (this needs to be evaluated in QGIS before running this code)
 
 # Create functions -----------------------------------------------
@@ -82,7 +82,7 @@ annotations_C <-
   if (survey_year == 2021) 
     {read.csv("https://raw.githubusercontent.com/staciekoslovsky-noaa/GlacialPv_CountingCOCOA/main/GlacialPv_COCOA_00_DefaultAnnotationFile_2021_C.csv")} else
   if (survey_year == 2024) 
-  {read.csv("https://raw.githubusercontent.com/staciekoslovsky-noaa/GlacialPv_CountingCOCOA/main/GlacialPv_COCOA_00_DefaultAnnotationFile_2024_C.csv")}
+    {read.csv("https://raw.githubusercontent.com/staciekoslovsky-noaa/GlacialPv_CountingCOCOA/main/GlacialPv_COCOA_00_DefaultAnnotationFile_2024_C.csv")}
 annotations_C <- annotations_C %>%
   cross_join(images_selected_C) %>%
   arrange(image_path) %>%
