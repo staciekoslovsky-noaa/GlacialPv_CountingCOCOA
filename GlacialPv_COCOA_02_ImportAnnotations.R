@@ -74,7 +74,7 @@ for (f in 1:nrow(files)) {
              height = bound_bottom - bound_top) %>%
       filter(height <= 150 | width <= 150)
     
-    if (nrow(processed_too_big) > 0) {
+    if (nrow(processed_too_small) > 0) {
       stop(paste0("Bounding boxes too small for reviewed/suppressed zones in ", files$processed[f]))
     }
     
